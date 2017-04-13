@@ -878,6 +878,8 @@ static inline size_t xsize_t(off_t len)
 __attribute__((format (printf, 3, 4)))
 extern int xsnprintf(char *dst, size_t max, const char *fmt, ...);
 
+extern int xgethostname(char *buf, size_t len);
+
 /* in ctype.c, for kwset users */
 extern const unsigned char tolower_trans_tbl[256];
 
