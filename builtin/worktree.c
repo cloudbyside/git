@@ -243,7 +243,10 @@ static int add_worktree(const char *path, const char *refname,
 	 * after the preparation is over.
 	 */
 	strbuf_addf(&sb, "%s/locked", sb_repo.buf);
-	write_file(sb.buf, "initializing");
+	if (!opts->keep_locked)
+		write_file(sb.buf, "initializing");
+	else
+		write_file(sb.buf, "added with --lock");
 
 	strbuf_addf(&sb_git, "%s/.git", path);
 	if (safe_create_leading_directories_const(sb_git.buf))
@@ -306,15 +309,10 @@ static int add_worktree(const char *path, const char *refname,
 done:
 	strbuf_reset(&sb);
 	strbuf_addf(&sb, "%s/locked", sb_repo.buf);
-	if (!ret && opts->keep_locked) {
-		/*
-		 * Don't keep the confusing "initializing" message
-		 * after it's already over.
-		 */
-		truncate(sb.buf, 0);
-	} else {
+	if (!ret && opts->keep_locked)
+		;
+	else
 		unlink_or_warn(sb.buf);
-	}
 	argv_array_clear(&child_env);
 	strbuf_release(&sb);
 	strbuf_release(&symref);
